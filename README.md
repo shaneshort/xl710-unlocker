@@ -19,10 +19,16 @@ checksum. Nothing has to be edited or recompiled.
 
 ## Quick start
 
-Build on any machine with Go 1.22+ and copy the static binary to the Linux
-box with the card:
+Download the static binary from the
+[latest release](https://github.com/shaneshort/xl710-unlocker/releases/latest)
+on the Linux box with the card:
 
-    make                      # -> xl710-unlock-linux-amd64, xl710-unlock-linux-arm64
+    curl -fLO https://github.com/shaneshort/xl710-unlocker/releases/latest/download/xl710-unlock-linux-amd64
+    install -m 755 xl710-unlock-linux-amd64 ./xl710-unlock
+
+Or build it yourself with Go 1.22+ (on any OS) and copy it over:
+
+    make                      # -> xl710-unlock-linux-amd64
     scp xl710-unlock-linux-amd64 server:xl710-unlock
 
 On the server:

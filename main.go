@@ -66,6 +66,7 @@ Usage:
   xl710-unlock reset  [NIC]           global-reset the card so firmware reloads NVM
   xl710-unlock backup [NIC] [-o FILE] save the NVM shadow RAM to a file
   xl710-unlock dump   [NIC] [ADDR [COUNT]]  hex dump NVM words
+  xl710-unlock version
 
 NIC is an interface name (eth4, enp1s0f0) or PCI address (01:00.0). It can be
 left out when there is only one card. All ports on a card share one NVM, so
@@ -110,6 +111,8 @@ func (f *intFlag) Set(s string) error {
 	f.v, f.set = int(v), true
 	return err
 }
+
+var version = "dev" // set by the Makefile
 
 // Swappable for tests.
 var (
@@ -192,7 +195,7 @@ func run(args []string) error {
 	if err != nil {
 		return err
 	}
-	maxPos := map[string]int{"list": 0, "ls": 0, "status": 1, "unlock": 1, "lock": 1, "checksum": 1, "reset": 1, "backup": 1, "dump": 3, "help": 99}
+	maxPos := map[string]int{"list": 0, "ls": 0, "status": 1, "unlock": 1, "lock": 1, "checksum": 1, "reset": 1, "backup": 1, "dump": 3, "help": 99, "version": 0}
 	if n, ok := maxPos[cmd]; ok && len(pos) > n {
 		return usageError{fmt.Errorf("too many arguments for %s: %s", cmd, strings.Join(pos, " "))}
 	}
@@ -218,6 +221,9 @@ func run(args []string) error {
 		return cmdDump(o, pos)
 	case "help":
 		fmt.Print(usage)
+		return nil
+	case "version":
+		fmt.Println("xl710-unlock", version)
 		return nil
 	}
 	return usageError{fmt.Errorf("unknown command %q", cmd)}
