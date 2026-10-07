@@ -57,8 +57,13 @@ func setup(t *testing.T) *memNVM {
 	oldDebugfs := debugfsRoot
 	debugfsRoot = filepath.Join(sys, "kernel/debug")
 	for _, pci := range []string{"0000:01:00.0", "0000:01:00.1", "0000:02:00.0"} {
-		os.MkdirAll(filepath.Join(debugfsRoot, "i40e", pci), 0o755)
-		os.WriteFile(filepath.Join(debugfsRoot, "i40e", pci, "command"), nil, 0o644)
+		dir := filepath.Join(debugfsRoot, "i40e", pci)
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, "command"), nil, 0o644); err != nil {
+			t.Fatal(err)
+		}
 	}
 	stdinIsTerminal = func() bool { return false }
 	isRoot = func() bool { return true }
@@ -70,7 +75,9 @@ func setup(t *testing.T) *memNVM {
 	t.Cleanup(func() {
 		sysfsRoot, openNVM, isRoot, writeDelay, stdinIsTerminal, verifyDelay = oldSys, oldOpen, oldRoot, oldDelay, oldTerm, oldVD
 		debugfsRoot = oldDebugfs
-		os.Chdir(wd)
+		if err := os.Chdir(wd); err != nil {
+			t.Error(err)
+		}
 	})
 	return m
 }
@@ -139,7 +146,9 @@ func TestNICSelection(t *testing.T) {
 			t.Errorf("status %s opened %q, want %q", arg, m.port.Iface, want)
 		}
 	}
-	run([]string{"status", "02:00.0"})
+	if err := run([]string{"status", "02:00.0"}); err != nil {
+		t.Fatal(err)
+	}
 	if m.port.Device != 0x1583 {
 		t.Errorf("device id %04x not taken from sysfs", m.port.Device)
 	}
@@ -346,7 +355,9 @@ func TestReset(t *testing.T) {
 		t.Fatalf("reset -n: %v", err)
 	}
 
-	os.RemoveAll(filepath.Join(debugfsRoot, "i40e"))
+	if err := os.RemoveAll(filepath.Join(debugfsRoot, "i40e")); err != nil {
+		t.Fatal(err)
+	}
 	if err := run([]string{"reset", "02:00.0", "-y"}); err == nil || !strings.Contains(err.Error(), "debugfs") {
 		t.Fatalf("missing debugfs: %v", err)
 	}

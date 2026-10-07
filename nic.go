@@ -118,7 +118,7 @@ func Discover(sysfs string) ([]Card, error) {
 			p.Driver = filepath.Base(drv)
 		}
 		_, known := models[p.Device]
-		if p.Driver != "i40e" && !(p.Vendor == intelVendor && known) {
+		if p.Driver != "i40e" && (p.Vendor != intelVendor || !known) {
 			continue
 		}
 		c := bySlot[p.Slot()]
