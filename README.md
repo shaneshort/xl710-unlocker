@@ -151,5 +151,17 @@ without a reboot (tested on an X710-DA2, fw 6.80). Rebooting also works.
 - **@Nevinskas** wrote up the procedure in
   [Nevinskas/xl710-unlocker](https://github.com/Nevinskas/xl710-unlocker).
 
-The original repository has no license. If you are Wesley, or represent him,
-and want something changed here, please open an issue.
+## License
+
+Public domain, under the [Unlicense](LICENSE).
+
+The original repository was published without a license. Its author shared the
+method openly, in a public repository and on Intel's e1000-devel mailing list,
+so that others could unlock their cards. This project is a new implementation
+of that method in Go; none of the original C source is included. The facts it
+relies on (which NVM word and bit to change, and the i40e driver's ioctl
+interface) are not themselves copyrightable. On that basis we believe it is
+fine to release this rewrite into the public domain.
+
+If you are Wesley Terpstra, or represent him, and disagree or want the
+attribution changed, please open an issue and we will sort it out.
